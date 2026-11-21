@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Logbook & Laporan Lab</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-subtle: #f8fafc;
+      --sidebar-bg: #0f172a;
+      --sidebar-hover: #1e293b;
+      --sidebar-border: #1e293b;
+      --primary: #1e3a8a;
+      --primary-hover: #172554;
+      --primary-soft: #eff6ff;
+      --primary-border: #bfdbfe;
+      --success: #15803d;
+      --success-soft: #f0fdf4;
+      --success-border: #bbf7d0;
+      --warning: #b45309;
+      --warning-soft: #fffbeb;
+      --warning-border: #fde68a;
+      --danger: #b91c1c;
+      --danger-soft: #fef2f2;
+      --danger-border: #fecaca;
+      --text: #0f172a;
+      --text-secondary: #334155;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+      --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 268px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ================= LOGIN BOX ================= */
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background-color: #f1f5f9;
+      background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      padding: 36px 28px;
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+    }
+
+    .login-icon-header {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      background: #0f172a;
+      color: #ffffff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-align: center;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .login-card p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.45;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.15s;
+    }
+
+    .btn-login:hover {
+      background: #1e293b;
+    }
+
+    .btn-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+    }
+
+    /* ================= LAYOUT DASHBOARD + SIDEBAR ================= */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* SIDEBAR KIRI DARK SLATE ENTERPRISE */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand-card {
+      padding: 12px;
+      border-radius: 12px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-info {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: #2563eb;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-sub {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 145px;
+    }
+
+    .btn-close-sidebar {
+      display: none;
+      background: #334155;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      color: #e2e8f0;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 8px;
+      padding-left: 8px;
+    }
+
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: #cbd5e1;
+      font-size: 0.84rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      background: var(--sidebar-hover);
+      color: #ffffff;
+    }
+
+    .nav-item.active {
+      background: #1e3a8a;
+      color: #ffffff;
+      border-color: #2563eb;
+      font-weight: 600;
+    }
+
+    .sidebar-filter {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 9px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      font-size: 0.82rem;
+      color: #f8fafc;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .sidebar-filter:focus {
+      border-color: #3b82f6;
+    }
+
+    .sidebar-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 16px;
+      border-top: 1px solid #1e293b;
+    }
+
+    .btn-sidebar-export {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #166534;
+      border-radius: 9px;
+      background: #14532d;
+      color: #dcfce7;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.15s;
+    }
+
+    .btn-sidebar-export:hover {
+      background: #166534;
+    }
+
+    .btn-sidebar-user {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 9px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      font-size: 0.81rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      text-decoration: none;
+      transition: background-color 0.15s;
+    }
+
+    .btn-sidebar-user:hover {
+      background: #334155;
+    }
+
+    .btn-sidebar-logout {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #7f1d1d;
+      border-radius: 9px;
+      background: rgba(127, 29, 29, 0.25);
+      color: #fecaca;
+      font-size: 0.81rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: background-color 0.15s;
+    }
+
+    .btn-sidebar-logout:hover {
+      background: #7f1d1d;
+      color: #ffffff;
+    }
+
+    /* OVERLAY MOBILE */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(2px);
+      z-index: 90;
+    }
+
+    .sidebar-overlay.show {
+      display: block;
+    }
+
+    /* KONTEN UTAMA KANAN */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 0;
+      max-width: 1440px;
+    }
+
+    /* MOBILE TOPBAR (HANYA MUNCUL DI HP) */
+    .mobile-topbar {
+      display: none;
+      background: var(--surface);
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .burger-btn {
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .mobile-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* HEADER SAMBUTAN DI ATAS STATISTIK */
+    .dashboard-welcome {
+      background: var(--surface);
+      padding: 20px 24px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .dashboard-welcome h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .dashboard-welcome p {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .dashboard-welcome p strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    /* 3 STATISTIK KPI ENTERPRISE */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+      order: 1;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .stat-num {
+      font-size: 1.85rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .stat-num.primary { color: var(--primary); }
+    .stat-num.orange { color: var(--warning); }
+    .stat-num.success { color: var(--success); }
+
+    .stat-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      order: 2;
+    }
+
+    .stat-icon-box svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .stat-icon-box.primary {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    .stat-icon-box.orange {
+      background: var(--warning-soft);
+      color: var(--warning);
+      border: 1px solid var(--warning-border);
+    }
+
+    .stat-icon-box.success {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+    }
+
+    /* TABEL DATA PANEL */
+    .table-card {
+      background: var(--surface);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .table-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .table-title-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .table-title-icon.orange {
+      background: var(--warning-soft);
+      border-color: var(--warning-border);
+      color: var(--warning);
+    }
+
+    .table-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .active-filter-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--surface-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: 8px;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      font-size: 0.84rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--surface-subtle);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover td {
+      background: #f8fafc;
+    }
+
+    /* BADGE & STATUS PROFESIONAL */
+    .badge-meja {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+
+    .badge-tingkat {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .tingkat-ringan {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+    }
+    .tingkat-sedang {
+      background: var(--warning-soft);
+      color: var(--warning);
+      border: 1px solid var(--warning-border);
+    }
+    .tingkat-berat {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+
+    .status-select {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .status-menunggu {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: var(--danger-border);
+    }
+
+    .status-diproses {
+      background: var(--warning-soft);
+      color: var(--warning);
+      border-color: var(--warning-border);
+    }
+
+    .status-selesai {
+      background: var(--success-soft);
+      color: var(--success);
+      border-color: var(--success-border);
+    }
+
+    .btn-del {
+      background: var(--surface);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+
+    .btn-del:hover {
+      background: var(--danger-soft);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 0.83rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transition: all 0.25s ease;
+      z-index: 999;
+      text-align: center;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* RESPONSIVE HP & TABLET */
+    @media (max-width: 960px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .btn-close-sidebar {
+        display: flex;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 16px;
+      }
+
+      .mobile-topbar {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HALAMAN LOGIN ADMIN -->
+  <div class="login-wrapper" id="loginSection">
+    <div class="login-card">
+      <div class="login-icon-header">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <h2>Login Admin Lab</h2>
+      <p>Masuk menggunakan akun Admin Firebase untuk mengelola laporan</p>
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="adminEmail">Email Admin</label>
+          <input type="email" id="adminEmail" placeholder="admin@lab.com" required />
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">Password</label>
+          <input type="password" id="adminPassword" placeholder="••••••••" required />
+        </div>
+        <button type="submit" id="btnLoginSubmit" class="btn-login">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Masuk ke Panel Admin
+        </button>
+      </form>
+      <a href="index.html" class="back-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Kembali ke Halaman Logbook User
+      </a>
+    </div>
+  </div>
+
+  <!-- DASHBOARD ADMIN DENGAN SIDEBAR -->
+  <div class="app-layout hidden" id="adminDashboard">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+
+    <!-- SIDEBAR SEBELAH KIRI -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="brand-card">
+          <div class="brand-info">
+            <div class="brand-logo">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="brand-title">Admin Lab</div>
+              <div class="brand-sub" id="adminEmailLabel">Memuat sesi...</div>
+            </div>
+          </div>
+          <button class="btn-close-sidebar" onclick="toggleSidebar(false)" aria-label="Tutup Menu">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div>
+          <div class="sidebar-section-label">Menu Data</div>
+          <nav class="nav-menu">
+            <button class="nav-item active" id="btnTabKerusakan" onclick="switchAdminTab('kerusakan')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              </svg>
+              Laporan Kerusakan
+            </button>
+            <button class="nav-item" id="btnTabPemakaian" onclick="switchAdminTab('pemakaian')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+              Log Pemakaian Meja
+            </button>
+          </nav>
+        </div>
+
+        <div>
+          <div class="sidebar-section-label">Filter Ruangan</div>
+          <select class="sidebar-filter" id="filterLab" onchange="onFilterChange()">
+            <option value="ALL">Semua Ruangan Lab</option>
+            <option value="Lab Komputer 1">Lab Komputer 1</option>
+            <option value="Lab Komputer 2">Lab Komputer 2</option>
+            <option value="Lab Jaringan & Hardware">Lab Jaringan & Hardware</option>
+            <option value="Lab Multimedia">Lab Multimedia</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button class="btn-sidebar-export" onclick="exportCSV()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Unduh Laporan CSV
+        </button>
+        <a href="index.html" class="btn-sidebar-user">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Buka Form User
+        </a>
+        <button class="btn-sidebar-logout" onclick="logoutAdmin()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Keluar Sesi
+        </button>
+      </div>
+    </aside>
+
+    <!-- KONTEN UTAMA KANAN -->
+    <main class="main-content">
+      <!-- TOPBAR BURGER UNTUK HP -->
+      <div class="mobile-topbar">
+        <button class="burger-btn" onclick="toggleSidebar(true)" aria-label="Buka Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <div class="mobile-title">Dashboard Admin</div>
+        <div style="width: 38px;"></div>
+      </div>
+
+      <!-- HEADER SAMBUTAN DI ATAS STATISTIK -->
+      <section class="dashboard-welcome">
+        <div>
+          <h1>Dashboard Admin</h1>
+          <p>Selamat Datang, <strong>Englan</strong></p>
+        </div>
+        <div class="welcome-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          Sistem Logbook Terhubung
+        </div>
+      </section>
+
+      <!-- 3 STATISTIK KPI -->
+      <section class="stats-grid">
+        <div class="stat-card card-primary">
+          <div class="stat-icon-box primary">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Pemakaian Lab</div>
+            <div class="stat-num primary" id="statPemakaian">0</div>
+          </div>
+        </div>
+
+        <div class="stat-card card-orange">
+          <div class="stat-icon-box orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Laporan Belum Selesai</div>
+            <div class="stat-num orange" id="statRusakAktif">0</div>
+          </div>
+        </div>
+
+        <div class="stat-card card-success">
+          <div class="stat-icon-box success">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Kerusakan Tertangani</div>
+            <div class="stat-num success" id="statRusakSelesai">0</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABEL LAPORAN KERUSAKAN (DI BAWAH) -->
+      <section class="table-card card-rusak-accent" id="panelKerusakan">
+        <div class="table-header">
+          <div class="table-title-wrap">
+            <div class="table-title-icon orange">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              </svg>
+            </div>
+            <h2>Daftar Laporan Kerusakan</h2>
+          </div>
+          <span class="active-filter-badge" id="badgeFilterKerusakan">Semua Ruangan Lab</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Lokasi & Meja</th>
+                <th>Barang & Tingkat</th>
+                <th>Detail Kerusakan</th>
+                <th>Pelapor</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyKerusakan">
+              <tr><td colspan="7" style="text-align:center; padding:24px; color:#64748b;">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TABEL LOG PEMAKAIAN (DI BAWAH) -->
+      <section class="table-card hidden" id="panelPemakaian">
+        <div class="table-header">
+          <div class="table-title-wrap">
+            <div class="table-title-icon">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+            </div>
+            <h2>Log Pemakaian Lab & Meja</h2>
+          </div>
+          <span class="active-filter-badge" id="badgeFilterPemakaian">Semua Ruangan Lab</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Nama / NIM</th>
+                <th>Ruang Lab</th>
+                <th>Meja / PC</th>
+                <th>Waktu</th>
+                <th>Kegiatan</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPemakaian">
+              <tr><td colspan="7" style="text-align:center; padding:24px; color:#64748b;">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      updateDoc,
+      deleteDoc,
+      onSnapshot,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyXDWddt0ksjPQcxg771xGibp2wxooUV0",
+      authDomain: "gen-lang-client-0577227965.firebaseapp.com",
+      projectId: "gen-lang-client-0577227965",
+      storageBucket: "gen-lang-client-0577227965.firebasestorage.app",
+      messagingSenderId: "63389002557",
+      appId: "1:63389002557:web:6e9579940a36f2360c7354"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentTab = 'kerusakan';
+    let allPemakaian = [];
+    let allKerusakan = [];
+    let unsubPemakaian = null;
+    let unsubKerusakan = null;
+
+    window.showToast = function(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    };
+
+    // Buka/Tutup Sidebar di HP
+    window.toggleSidebar = function(open) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (open) {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+      } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+      }
+    };
+
+    // Proses Login Admin
+    document.getElementById('formLogin').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const btn = document.getElementById('btnLoginSubmit');
+
+      btn.disabled = true;
+      btn.textContent = 'Memverifikasi...';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showToast('Login berhasil!');
+      } catch (err) {
+        console.error(err);
+        showToast('Login gagal: Email atau password salah.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Masuk ke Panel Admin
+        `;
+      }
+    });
+
+    // Logout Admin
+    window.logoutAdmin = async function() {
+      try {
+        toggleSidebar(false);
+        await signOut(auth);
+        showToast('Anda telah keluar.');
+      } catch (err) {
+        showToast('Gagal keluar: ' + err.message);
+      }
+    };
+
+    // Pantau Status Autentikasi Admin
+    onAuthStateChanged(auth, (user) => {
+      const loginSection = document.getElementById('loginSection');
+      const adminDashboard = document.getElementById('adminDashboard');
+
+      if (user) {
+        loginSection.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        document.getElementById('adminEmailLabel').textContent = user.email;
+        startRealtimeListeners();
+      } else {
+        loginSection.classList.remove('hidden');
+        adminDashboard.classList.add('hidden');
+        if (unsubPemakaian) unsubPemakaian();
+        if (unsubKerusakan) unsubKerusakan();
+      }
+    });
+
+    function startRealtimeListeners() {
+      const qKerusakan = query(collection(db, 'logbook_kerusakan'), orderBy('createdAt', 'desc'));
+      unsubKerusakan = onSnapshot(qKerusakan, (snapshot) => {
+        allKerusakan = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderAdminData();
+      }, (err) => {
+        showToast('Error akses Firestore: ' + err.message);
+      });
+
+      const qPemakaian = query(collection(db, 'logbook_pemakaian'), orderBy('createdAt', 'desc'));
+      unsubPemakaian = onSnapshot(qPemakaian, (snapshot) => {
+        allPemakaian = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderAdminData();
+      });
+    }
+
+    window.switchAdminTab = function(tab) {
+      currentTab = tab;
+      document.getElementById('btnTabKerusakan').classList.toggle('active', tab === 'kerusakan');
+      document.getElementById('btnTabPemakaian').classList.toggle('active', tab === 'pemakaian');
+      document.getElementById('panelKerusakan').classList.toggle('hidden', tab !== 'kerusakan');
+      document.getElementById('panelPemakaian').classList.toggle('hidden', tab !== 'pemakaian');
+      toggleSidebar(false);
+    };
+
+    window.onFilterChange = function() {
+      renderAdminData();
+      toggleSidebar(false);
+    };
+
+    window.updateStatus = async function(docId, newStatus) {
+      try {
+        await updateDoc(doc(db, 'logbook_kerusakan', docId), {
+          status: newStatus
+        });
+        showToast(`Status diperbarui menjadi "${newStatus}"`);
+      } catch (err) {
+        showToast('Gagal mengubah status: ' + err.message);
+      }
+    };
+
+    window.deleteItem = async function(collectionName, docId) {
+      try {
+        await deleteDoc(doc(db, collectionName, docId));
+        showToast('Data berhasil dihapus dari database');
+      } catch (err) {
+        showToast('Gagal menghapus: ' + err.message);
+      }
+    };
+
+    window.renderAdminData = function() {
+      const filterSelect = document.getElementById('filterLab');
+      const filterLab = filterSelect.value;
+      const filterLabel = filterSelect.options[filterSelect.selectedIndex].text;
+
+      document.getElementById('badgeFilterKerusakan').textContent = filterLabel;
+      document.getElementById('badgeFilterPemakaian').textContent = filterLabel;
+
+      document.getElementById('statPemakaian').textContent = allPemakaian.length;
+      document.getElementById('statRusakAktif').textContent = allKerusakan.filter(r => r.status !== 'Selesai').length;
+      document.getElementById('statRusakSelesai').textContent = allKerusakan.filter(r => r.status === 'Selesai').length;
+
+      const trashIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+
+      // Render Tabel Kerusakan
+      const filteredKerusakan = filterLab === 'ALL' ? allKerusakan : allKerusakan.filter(k => k.lab === filterLab);
+      const tbodyKerusakan = document.getElementById('tbodyKerusakan');
+
+      if (filteredKerusakan.length === 0) {
+        tbodyKerusakan.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748b; padding:24px;">Tidak ada laporan kerusakan.</td></tr>';
+      } else {
+        tbodyKerusakan.innerHTML = filteredKerusakan.map(item => {
+          const tingkatClass = item.tingkat === 'Ringan' ? 'tingkat-ringan' : (item.tingkat === 'Sedang' ? 'tingkat-sedang' : 'tingkat-berat');
+          const statusClass = item.status === 'Selesai' ? 'status-selesai' : (item.status === 'Diproses' ? 'status-diproses' : 'status-menunggu');
+          return `
+            <tr>
+              <td>${item.tanggal || '-'}</td>
+              <td><strong>${item.lab}</strong><br><span class="badge-meja">${item.meja}</span></td>
+              <td><strong>${item.barang}</strong><br><span class="badge-tingkat ${tingkatClass}">Tingkat: ${item.tingkat}</span></td>
+              <td style="max-width:220px;">${item.deskripsi}</td>
+              <td>${item.pelapor}</td>
+              <td>
+                <select class="status-select ${statusClass}" onchange="updateStatus('${item.id}', this.value)">
+                  <option value="Menunggu" ${item.status === 'Menunggu' ? 'selected' : ''}>Menunggu</option>
+                  <option value="Diproses" ${item.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
+                  <option value="Selesai" ${item.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
+                </select>
+              </td>
+              <td><button class="btn-del" onclick="deleteItem('logbook_kerusakan', '${item.id}')">${trashIcon} Hapus</button></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Render Tabel Pemakaian
+      const filteredPemakaian = filterLab === 'ALL' ? allPemakaian : allPemakaian.filter(p => p.lab === filterLab);
+      const tbodyPemakaian = document.getElementById('tbodyPemakaian');
+
+      if (filteredPemakaian.length === 0) {
+        tbodyPemakaian.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748b; padding:24px;">Tidak ada catatan pemakaian lab.</td></tr>';
+      } else {
+        tbodyPemakaian.innerHTML = filteredPemakaian.map(item => `
+          <tr>
+            <td>${item.tanggal || '-'}</td>
+            <td><strong>${item.nama}</strong></td>
+            <td>${item.lab}</td>
+            <td><span class="badge-meja">${item.meja}</span></td>
+            <td>${item.jamMulai} - ${item.jamSelesai}</td>
+            <td>${item.kegiatan}</td>
+            <td><button class="btn-del" onclick="deleteItem('logbook_pemakaian', '${item.id}')">${trashIcon} Hapus</button></td>
+          </tr>
+        `).join('');
+      }
+    };
+
+    window.exportCSV = function() {
+      const isKerusakan = currentTab === 'kerusakan';
+      const data = isKerusakan ? allKerusakan : allPemakaian;
+
+      if (data.length === 0) {
+        showToast('Tidak ada data untuk diunduh.');
+        return;
+      }
+
+      let csvContent = 'data:text/csv;charset=utf-8,';
+      if (isKerusakan) {
+        csvContent += 'Tanggal,Lab,Meja,Barang,Tingkat,Deskripsi,Pelapor,Status\n';
+        data.forEach(r => {
+          csvContent += `"${r.tanggal}","${r.lab}","${r.meja}","${r.barang}","${r.tingkat}","${(r.deskripsi || '').replace(/"/g, '""')}","${r.pelapor}","${r.status}"\n`;
+        });
+      } else {
+        csvContent += 'Tanggal,Nama/NIM,Lab,Meja,Jam Mulai,Jam Selesai,Kegiatan\n';
+        data.forEach(p => {
+          csvContent += `"${p.tanggal}","${p.nama}","${p.lab}","${p.meja}","${p.jamMulai}","${p.jamSelesai}","${(p.kegiatan || '').replace(/"/g, '""')}"\n`;
+        });
+      }
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', isKerusakan ? 'laporan_kerusakan_lab.csv' : 'logbook_pemakaian_lab.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toggleSidebar(false);
+      showToast('File CSV berhasil diunduh!');
+    };
+  </script>
+</body>
+</html>
