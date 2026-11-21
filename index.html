@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logbook Lab & Laporan Kerusakan</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-subtle: #f8fafc;
+      --primary: #1e3a8a;
+      --primary-hover: #172554;
+      --primary-soft: #eff6ff;
+      --primary-border: #bfdbfe;
+      --danger: #b91c1c;
+      --danger-hover: #991b1b;
+      --danger-soft: #fef2f2;
+      --danger-border: #fecaca;
+      --success: #15803d;
+      --success-soft: #f0fdf4;
+      --success-border: #bbf7d0;
+      --warning: #b45309;
+      --warning-soft: #fffbeb;
+      --warning-border: #fde68a;
+      --text: #0f172a;
+      --text-secondary: #334155;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      background: var(--surface);
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.015em;
+    }
+
+    header p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .admin-link {
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .admin-link:hover {
+      background: #f1f5f9;
+      color: var(--text);
+      border-color: #cbd5e1;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--surface);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: var(--surface-subtle);
+    }
+
+    .tab-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    .tab-btn.active.danger-tab {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .card {
+      background: var(--surface);
+      padding: 22px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-section-header {
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-section-header h2 {
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .card-section-header span {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.79rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 88px;
+      line-height: 1.45;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.15s;
+    }
+
+    .btn-submit:hover {
+      background: #1e293b;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-submit.btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-submit.btn-danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .history-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .live-dot {
+      font-size: 0.72rem;
+      color: var(--success);
+      background: var(--success-soft);
+      border: 1px solid var(--success-border);
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .live-dot::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .live-dot.error {
+      color: var(--danger);
+      background: var(--danger-soft);
+      border-color: var(--danger-border);
+    }
+
+    .live-dot.error::before {
+      background: var(--danger);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 290px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .history-item {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      padding: 13px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      transition: border-color 0.15s;
+    }
+
+    .history-item:hover {
+      border-color: #cbd5e1;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .history-header strong {
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+
+    .badge {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.71rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-lab {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+    .badge-rusak {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+    .badge-selesai {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+    }
+    .badge-proses {
+      background: var(--warning-soft);
+      color: var(--warning);
+      border: 1px solid var(--warning-border);
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 0.83rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transition: all 0.25s ease;
+      z-index: 999;
+      text-align: center;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 480px) {
+      .row-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .admin-link {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="header-brand">
+        <div class="header-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </div>
+        <div>
+          <h1>Logbook Laboratorium</h1>
+          <p>Pencatatan Pemakaian & Laporan Inventaris</p>
+        </div>
+      </div>
+      <a href="admin.html" class="admin-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Panel Admin
+      </a>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tabPemakaian" onclick="switchTab('pemakaian')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        Pemakaian Lab
+      </button>
+      <button class="tab-btn" id="tabKerusakan" onclick="switchTab('kerusakan')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+        </svg>
+        Lapor Kerusakan
+      </button>
+    </div>
+
+    <!-- FORM PEMAKAIAN LAB -->
+    <div class="card" id="formPemakaianCard">
+      <div class="card-section-header">
+        <h2>Formulir Penggunaan Fasilitas</h2>
+        <span>Logbook Harian</span>
+      </div>
+      <form id="formPemakaian">
+        <div class="form-group">
+          <label for="namaPemakai">Nama Lengkap / NIM</label>
+          <input type="text" id="namaPemakai" placeholder="Contoh: Budi Santoso - 210451" required />
+        </div>
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="ruangLab">Ruang Laboratorium</label>
+            <select id="ruangLab" required>
+              <option value="">-- Pilih Lab --</option>
+              <option value="Lab Komputer 1">Lab Komputer 1</option>
+              <option value="Lab Komputer 2">Lab Komputer 2</option>
+              <option value="Lab Jaringan & Hardware">Lab Jaringan & Hardware</option>
+              <option value="Lab Multimedia">Lab Multimedia</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="nomorMeja">Nomor Meja / PC</label>
+            <input type="text" id="nomorMeja" placeholder="Contoh: Meja 05" required />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="jamMulai">Jam Mulai</label>
+            <input type="time" id="jamMulai" required />
+          </div>
+
+          <div class="form-group">
+            <label for="jamSelesai">Jam Selesai</label>
+            <input type="time" id="jamSelesai" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="kegiatan">Keperluan / Mata Kuliah</label>
+          <input type="text" id="kegiatan" placeholder="Contoh: Praktikum Pemrograman Web" required />
+        </div>
+
+        <button type="submit" id="btnSubmitPemakaian" class="btn-submit">Simpan Catatan Pemakaian</button>
+      </form>
+    </div>
+
+    <!-- FORM LAPOR KERUSAKAN -->
+    <div class="card hidden" id="formKerusakanCard">
+      <div class="card-section-header">
+        <h2>Formulir Laporan Kendala Alat</h2>
+        <span>Tiket Perbaikan</span>
+      </div>
+      <form id="formKerusakan">
+        <div class="form-group">
+          <label for="namaPelapor">Nama Pelapor</label>
+          <input type="text" id="namaPelapor" placeholder="Masukkan nama Anda" required />
+        </div>
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="labRusak">Lokasi Lab</label>
+            <select id="labRusak" required>
+              <option value="">-- Pilih Lab --</option>
+              <option value="Lab Komputer 1">Lab Komputer 1</option>
+              <option value="Lab Komputer 2">Lab Komputer 2</option>
+              <option value="Lab Jaringan & Hardware">Lab Jaringan & Hardware</option>
+              <option value="Lab Multimedia">Lab Multimedia</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="mejaRusak">Nomor Meja / Posisi</label>
+            <input type="text" id="mejaRusak" placeholder="Contoh: Meja 12" required />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="namaBarang">Nama Barang / Alat</label>
+            <input type="text" id="namaBarang" placeholder="Contoh: Monitor / Mouse / AC" required />
+          </div>
+
+          <div class="form-group">
+            <label for="tingkatKerusakan">Tingkat Kerusakan</label>
+            <select id="tingkatKerusakan" required>
+              <option value="Ringan">Ringan (Masih bisa dipakai)</option>
+              <option value="Sedang">Sedang (Mengganggu fungsi)</option>
+              <option value="Berat">Berat (Mati total / tidak bisa dipakai)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="deskripsiRusak">Detail Kerusakan</label>
+          <textarea id="deskripsiRusak" placeholder="Jelaskan kondisi kerusakan secara singkat..." required></textarea>
+        </div>
+
+        <button type="submit" id="btnSubmitKerusakan" class="btn-submit btn-danger">Kirim Laporan Kerusakan</button>
+      </form>
+    </div>
+
+    <!-- RIWAYAT TERBARU -->
+    <div class="card">
+      <div class="history-title">
+        <span>Aktivitas & Laporan Terbaru</span>
+        <span class="live-dot" id="connectionBadge">Terhubung Cloud</span>
+      </div>
+      <div class="history-list" id="recentList">
+        <p style="font-size:0.82rem; color:#64748b; text-align:center; padding:16px 0;">Memuat data dari server...</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      onSnapshot,
+      query,
+      orderBy,
+      limit
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyXDWddt0ksjPQcxg771xGibp2wxooUV0",
+      authDomain: "gen-lang-client-0577227965.firebaseapp.com",
+      projectId: "gen-lang-client-0577227965",
+      storageBucket: "gen-lang-client-0577227965.firebasestorage.app",
+      messagingSenderId: "63389002557",
+      appId: "1:63389002557:web:6e9579940a36f2360c7354"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let listPemakaian = [];
+    let listKerusakan = [];
+
+    window.showToast = function(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    };
+
+    window.switchTab = function(tab) {
+      const tabPemakaian = document.getElementById('tabPemakaian');
+      const tabKerusakan = document.getElementById('tabKerusakan');
+      const formPemakaianCard = document.getElementById('formPemakaianCard');
+      const formKerusakanCard = document.getElementById('formKerusakanCard');
+
+      if (tab === 'pemakaian') {
+        tabPemakaian.classList.add('active');
+        tabKerusakan.classList.remove('active', 'danger-tab');
+        formPemakaianCard.classList.remove('hidden');
+        formKerusakanCard.classList.add('hidden');
+      } else {
+        tabKerusakan.classList.add('active', 'danger-tab');
+        tabPemakaian.classList.remove('active');
+        formKerusakanCard.classList.remove('hidden');
+        formPemakaianCard.classList.add('hidden');
+      }
+    };
+
+    function getTanggalSekarang() {
+      const now = new Date();
+      return now.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+    }
+
+    function setConnectionError(err) {
+      const badge = document.getElementById('connectionBadge');
+      const container = document.getElementById('recentList');
+      badge.textContent = 'Gagal Terhubung';
+      badge.classList.add('error');
+      container.innerHTML = `<p style="font-size:0.82rem; color:#b91c1c; text-align:center; padding:16px 0;">Gagal mengakses database: ${err.code || err.message}</p>`;
+    }
+
+    // Simpan Pemakaian Lab ke Firestore
+    document.getElementById('formPemakaian').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitPemakaian');
+      btn.disabled = true;
+      btn.textContent = 'Menyimpan...';
+
+      try {
+        await addDoc(collection(db, 'logbook_pemakaian'), {
+          createdAt: Date.now(),
+          tanggal: getTanggalSekarang(),
+          nama: document.getElementById('namaPemakai').value.trim(),
+          lab: document.getElementById('ruangLab').value,
+          meja: document.getElementById('nomorMeja').value.trim(),
+          jamMulai: document.getElementById('jamMulai').value,
+          jamSelesai: document.getElementById('jamSelesai').value,
+          kegiatan: document.getElementById('kegiatan').value.trim()
+        });
+        this.reset();
+        showToast('Catatan pemakaian lab berhasil disimpan!');
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal menyimpan: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Simpan Catatan Pemakaian';
+      }
+    });
+
+    // Simpan Laporan Kerusakan ke Firestore
+    document.getElementById('formKerusakan').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitKerusakan');
+      btn.disabled = true;
+      btn.textContent = 'Mengirim...';
+
+      try {
+        await addDoc(collection(db, 'logbook_kerusakan'), {
+          createdAt: Date.now(),
+          tanggal: getTanggalSekarang(),
+          pelapor: document.getElementById('namaPelapor').value.trim(),
+          lab: document.getElementById('labRusak').value,
+          meja: document.getElementById('mejaRusak').value.trim(),
+          barang: document.getElementById('namaBarang').value.trim(),
+          tingkat: document.getElementById('tingkatKerusakan').value,
+          deskripsi: document.getElementById('deskripsiRusak').value.trim(),
+          status: 'Menunggu'
+        });
+        this.reset();
+        showToast('Laporan kerusakan berhasil dikirim ke Admin!');
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal mengirim laporan: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Kirim Laporan Kerusakan';
+      }
+    });
+
+    // Listener Real-time Pemakaian
+    const qPemakaian = query(collection(db, 'logbook_pemakaian'), orderBy('createdAt', 'desc'), limit(5));
+    onSnapshot(qPemakaian, (snapshot) => {
+      listPemakaian = snapshot.docs.map(doc => ({ id: doc.id, tipe: 'pemakaian', ...doc.data() }));
+      renderRecent();
+    }, (err) => {
+      console.error(err);
+      setConnectionError(err);
+    });
+
+    // Listener Real-time Kerusakan
+    const qKerusakan = query(collection(db, 'logbook_kerusakan'), orderBy('createdAt', 'desc'), limit(5));
+    onSnapshot(qKerusakan, (snapshot) => {
+      listKerusakan = snapshot.docs.map(doc => ({ id: doc.id, tipe: 'kerusakan', ...doc.data() }));
+      renderRecent();
+    }, (err) => {
+      console.error(err);
+      setConnectionError(err);
+    });
+
+    function renderRecent() {
+      const container = document.getElementById('recentList');
+      const combined = [...listPemakaian, ...listKerusakan]
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+        .slice(0, 6);
+
+      if (combined.length === 0) {
+        container.innerHTML = '<p style="font-size:0.82rem; color:#64748b; text-align:center; padding:16px 0;">Belum ada catatan atau laporan.</p>';
+        return;
+      }
+
+      container.innerHTML = combined.map(item => {
+        if (item.tipe === 'pemakaian') {
+          return `
+            <div class="history-item">
+              <div class="history-header">
+                <strong>${item.nama}</strong>
+                <span class="badge badge-lab">Pemakaian</span>
+              </div>
+              <div style="color:#334155;">${item.lab} • <strong>${item.meja}</strong> (${item.jamMulai} - ${item.jamSelesai})</div>
+              <div style="color:#64748b; font-size:0.76rem; margin-top:4px;">${item.tanggal} • ${item.kegiatan}</div>
+            </div>
+          `;
+        } else {
+          const statusClass = item.status === 'Selesai' ? 'badge-selesai' : (item.status === 'Diproses' ? 'badge-proses' : 'badge-rusak');
+          return `
+            <div class="history-item">
+              <div class="history-header">
+                <strong>${item.barang} (${item.meja})</strong>
+                <span class="badge ${statusClass}">${item.status}</span>
+              </div>
+              <div style="color:#334155;">${item.lab} • Kerusakan ${item.tingkat}</div>
+              <div style="color:#64748b; font-size:0.76rem; margin-top:4px;">Pelapor: ${item.pelapor} (${item.tanggal})</div>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+  </script>
+</body>
+</html>
